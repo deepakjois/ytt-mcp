@@ -3,6 +3,7 @@
 import pytest
 from unittest.mock import patch, AsyncMock
 from fastmcp import Client
+from mcp.types import TextContent
 from ytt_mcp import mcp, extract_video_id
 
 
@@ -36,11 +37,11 @@ class TestExtractVideoId:
 
 
 async def test_youtube_transcript_mcp_server():
-    """Test various scenarios for the get_youtube_transcript function."""
+    """Test various scenarios for the get_youtube_transcript tool."""
     mock_transcript_en = "This is a test transcript"
     mock_transcript_fr = "Ceci est une transcription de test en français"
 
-    def mock_fetch_side_effect(video_id: str, lang: str = None) -> str:
+    def mock_fetch_side_effect(video_id: str, lang: str | None = None) -> str:
         if lang is None or lang == "en":
             return mock_transcript_en
         elif lang == "fr":
@@ -62,6 +63,7 @@ async def test_youtube_transcript_mcp_server():
                 "get_youtube_transcript",
                 {"url": "https://youtube.com/watch?v=dQw4w9WgXcQ"},
             )
+            assert isinstance(result[0], TextContent)
             assert result[0].text == mock_transcript_en
             mock_fetch.assert_called_with("dQw4w9WgXcQ", "en")
 
@@ -70,6 +72,7 @@ async def test_youtube_transcript_mcp_server():
                 "get_youtube_transcript",
                 {"url": "https://youtube.com/watch?v=dQw4w9WgXcQ", "lang": "en"},
             )
+            assert isinstance(result[0], TextContent)
             assert result[0].text == mock_transcript_en
             mock_fetch.assert_called_with("dQw4w9WgXcQ", "en")
 
@@ -78,6 +81,7 @@ async def test_youtube_transcript_mcp_server():
                 "get_youtube_transcript",
                 {"url": "https://youtube.com/watch?v=dQw4w9WgXcQ", "lang": "fr"},
             )
+            assert isinstance(result[0], TextContent)
             assert result[0].text == mock_transcript_fr
             mock_fetch.assert_called_with("dQw4w9WgXcQ", "fr")
 

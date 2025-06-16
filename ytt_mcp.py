@@ -9,7 +9,9 @@ from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
-from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api import (
+    YouTubeTranscriptApi,  # pyright: ignore reportPrivateUsage
+)
 from youtube_transcript_api.formatters import TextFormatter
 
 # Configure logging
@@ -61,9 +63,7 @@ async def fetch_youtube_transcript(video_id: str, lang: str = "en") -> str:
         Exception: If transcript cannot be retrieved
     """
     try:
-        transcript = YouTubeTranscriptApi().fetch([video_id], languages=[lang])[
-            video_id
-        ]
+        transcript = YouTubeTranscriptApi().fetch(video_id, languages=[lang])
         formatter = TextFormatter()
         return formatter.format_transcript(transcript)
     except Exception as e:
