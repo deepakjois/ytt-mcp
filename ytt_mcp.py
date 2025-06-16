@@ -6,13 +6,13 @@ A Model Context Protocol server that provides YouTube transcript extraction.
 import logging
 import re
 
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import TextFormatter
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("youtube-transcript-server")
+logger = logging.getLogger("youtube-transcript-mcp-server")
 
 # Create server instance
 mcp = FastMCP("YouTube Transcript MCP Server", instructions="This server provides the transcript of a YouTube video.")

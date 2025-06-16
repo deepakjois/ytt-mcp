@@ -1,10 +1,9 @@
 """Tests for YouTube Transcript MCP Server."""
 
 import pytest
-
-from ytt_mcp import (
-    extract_video_id,
-)
+from unittest.mock import patch, AsyncMock
+from fastmcp import Client
+from ytt_mcp import mcp, extract_video_id
 
 
 class TestExtractVideoId:
@@ -34,3 +33,22 @@ class TestExtractVideoId:
         """Test that invalid URL raises ValueError."""
         with pytest.raises(ValueError, match="Invalid YouTube URL"):
             extract_video_id("not-a-valid-url")
+
+
+async def test_youtube_transcript_mcp_server():
+    """Test the get_youtube_transcript function with a mocked transcript fetch."""
+    mock_transcript = "This is a test transcript"
+    
+    with patch('ytt_mcp.fetch_youtube_transcript', new_callable=AsyncMock) as mock_fetch:
+        mock_fetch.return_value = mock_transcript
+        
+        async with Client(mcp) as client:
+            tools = await client.list_tools()
+            assert len(tools) == 1
+            assert tools[0].name == "get_youtube_transcript"
+            
+            result = await client.call_tool("get_youtube_transcript", {"url": "https://youtube.com/watch?v=dQw4w9WgXcQ"})
+            print(result)
+            assert result[0].text == mock_transcript
+            mock_fetch.assert_called_once_with("dQw4w9WgXcQ")
+

@@ -20,7 +20,7 @@ This document contains critical information about working with this codebase. Fo
 
 3. Testing Requirements
    - Framework: `uv run --frozen pytest`
-   - Async testing: use anyio, not asyncio
+   - Async testing: use asyncio
    - Coverage: test edge cases and errors
    - New features require tests
    - Bug fixes require regression tests
