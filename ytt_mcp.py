@@ -3,7 +3,6 @@
 A Model Context Protocol server that provides YouTube transcript extraction.
 """
 
-import asyncio
 import logging
 import re
 
@@ -16,7 +15,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("youtube-transcript-server")
 
 # Create server instance
-mcp = FastMCP("YouTube Transcript Server")
+mcp = FastMCP("YouTube Transcript MCP Server", instructions="This server provides the transcript of a YouTube video.")
 
 
 def extract_video_id(url_or_id: str) -> str:
@@ -56,12 +55,7 @@ async def fetch_youtube_transcript(video_id: str) -> str:
         Exception: If transcript cannot be retrieved
     """
     try:
-        # Run the blocking API call in a thread pool
-        loop = asyncio.get_event_loop()
-        transcript = await loop.run_in_executor(
-            None, YouTubeTranscriptApi().fetch, video_id
-        )
-
+        transcript = YouTubeTranscriptApi().fetch(video_id)
         formatter = TextFormatter()
         return formatter.format_transcript(transcript)
     except Exception as e:
