@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "MCP Server to extract transcript from a YouTube video"
 readme = "README.md"
 requires-python = ">=3.10" # Matches the mcp sdk
-authors = [{ name = "Deepak Jois}]
+authors = [{ name = "Deepak Jois"}]
 maintainers = [
     { name = "Deepak Jois", email = "deepak.jois@gmail.com" },
 ]
