@@ -5,8 +5,10 @@ A Model Context Protocol server that provides YouTube transcript extraction.
 
 import logging
 import re
+from typing import Annotated
 
 from fastmcp import FastMCP
+from pydantic import Field
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import TextFormatter
 
@@ -15,7 +17,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("youtube-transcript-mcp-server")
 
 # Create server instance
-mcp = FastMCP("YouTube Transcript MCP Server", instructions="This server provides the transcript of a YouTube video.")
+mcp = FastMCP(
+    "YouTube Transcript MCP Server",
+    instructions="This server provides the transcript of a YouTube video.",
+)
 
 
 def extract_video_id(url_or_id: str) -> str:
@@ -42,11 +47,12 @@ def extract_video_id(url_or_id: str) -> str:
     raise ValueError(f"Invalid YouTube URL or video ID: {url_or_id}")
 
 
-async def fetch_youtube_transcript(video_id: str) -> str:
+async def fetch_youtube_transcript(video_id: str, lang: str = "en") -> str:
     """Get YouTube transcript for a video ID.
 
     Args:
         video_id: YouTube video ID
+        lang: Language code for transcript (defaults to 'en', e.g., 'en', 'fr', 'de')
 
     Returns:
         Formatted transcript text
@@ -55,7 +61,9 @@ async def fetch_youtube_transcript(video_id: str) -> str:
         Exception: If transcript cannot be retrieved
     """
     try:
-        transcript = YouTubeTranscriptApi().fetch(video_id)
+        transcript = YouTubeTranscriptApi().fetch([video_id], languages=[lang])[
+            video_id
+        ]
         formatter = TextFormatter()
         return formatter.format_transcript(transcript)
     except Exception as e:
@@ -64,11 +72,29 @@ async def fetch_youtube_transcript(video_id: str) -> str:
 
 
 @mcp.tool(description="Get the transcript of a YouTube video")
-async def get_youtube_transcript(url: str) -> str:
+async def get_youtube_transcript(
+    url: Annotated[
+        str,
+        Field(
+            description="YouTube URL or video ID",
+            examples=["https://youtube.com/watch?v=dQw4w9WgXcQ", "dQw4w9WgXcQ"],
+        ),
+    ],
+    lang: Annotated[
+        str,
+        Field(
+            default="en",
+            description="Language code for transcript (e.g., 'en', 'fr', 'de', 'es')",
+            pattern=r"^[a-z]{2}(-[A-Z]{2})?$",
+            examples=["en", "fr", "de", "es", "en-US"],
+        ),
+    ] = "en",
+) -> str:
     """Get the transcript of a YouTube video.
 
     Args:
         url: YouTube URL or video ID
+        lang: Language code for transcript (defaults to 'en', e.g., 'en', 'fr', 'de')
 
     Returns:
         The transcript text
@@ -78,7 +104,7 @@ async def get_youtube_transcript(url: str) -> str:
     """
     try:
         video_id = extract_video_id(url)
-        transcript = await fetch_youtube_transcript(video_id)
+        transcript = await fetch_youtube_transcript(video_id, lang)
         return transcript
     except ValueError as e:
         raise ValueError(f"Error: {e}")
