@@ -2,7 +2,7 @@
 
 import pytest
 
-from server import (
+from ytt_mcp import (
     extract_video_id,
 )
 
