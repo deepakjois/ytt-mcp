@@ -36,49 +36,52 @@ class TestExtractVideoId:
 
 
 async def test_youtube_transcript_mcp_server():
-    """Test the get_youtube_transcript function with a mocked transcript fetch."""
-    mock_transcript = "This is a test transcript"
+    """Test various scenarios for the get_youtube_transcript function."""
+    mock_transcript_en = "This is a test transcript"
+    mock_transcript_fr = "Ceci est une transcription de test en français"
 
-    with patch(
-        "ytt_mcp.fetch_youtube_transcript", new_callable=AsyncMock
-    ) as mock_fetch:
-        mock_fetch.return_value = mock_transcript
+    def mock_fetch_side_effect(video_id: str, lang: str = None) -> str:
+        if lang is None or lang == "en":
+            return mock_transcript_en
+        elif lang == "fr":
+            return mock_transcript_fr
+        else:
+            raise ValueError(f"Unsupported language: {lang}")
 
-        async with Client(mcp) as client:
-            tools = await client.list_tools()
-            assert len(tools) == 1
-            assert tools[0].name == "get_youtube_transcript"
+    async with Client(mcp) as client:
+        # Verify available tools
+        tools = await client.list_tools()
+        assert len(tools) == 1
+        assert tools[0].name == "get_youtube_transcript"
 
+        with patch("ytt_mcp.fetch_youtube_transcript", new_callable=AsyncMock) as mock_fetch:
+            mock_fetch.side_effect = mock_fetch_side_effect
+
+            # Test default case (no lang parameter)
             result = await client.call_tool(
                 "get_youtube_transcript",
                 {"url": "https://youtube.com/watch?v=dQw4w9WgXcQ"},
             )
-            print(result)
-            assert result[0].text == mock_transcript
-            mock_fetch.assert_called_once_with("dQw4w9WgXcQ", "en")
+            assert result[0].text == mock_transcript_en
+            mock_fetch.assert_called_with("dQw4w9WgXcQ", "en")
 
+            # Test explicit English language
+            result = await client.call_tool(
+                "get_youtube_transcript",
+                {"url": "https://youtube.com/watch?v=dQw4w9WgXcQ", "lang": "en"},
+            )
+            assert result[0].text == mock_transcript_en
+            mock_fetch.assert_called_with("dQw4w9WgXcQ", "en")
 
-async def test_youtube_transcript_mcp_server_with_french():
-    """Test the get_youtube_transcript function with French language parameter."""
-    mock_transcript_french = "Ceci est une transcription de test en français"
-
-    with patch(
-        "ytt_mcp.fetch_youtube_transcript", new_callable=AsyncMock
-    ) as mock_fetch:
-        mock_fetch.return_value = mock_transcript_french
-
-        async with Client(mcp) as client:
+            # Test French transcript
             result = await client.call_tool(
                 "get_youtube_transcript",
                 {"url": "https://youtube.com/watch?v=dQw4w9WgXcQ", "lang": "fr"},
             )
-            assert result[0].text == mock_transcript_french
-            mock_fetch.assert_called_once_with("dQw4w9WgXcQ", "fr")
+            assert result[0].text == mock_transcript_fr
+            mock_fetch.assert_called_with("dQw4w9WgXcQ", "fr")
 
-
-async def test_youtube_transcript_invalid_language():
-    """Test that invalid language codes are rejected by Pydantic validation."""
-    async with Client(mcp) as client:
+        # Test invalid language code (Pydantic validation)
         with pytest.raises(Exception, match="validation error"):
             await client.call_tool(
                 "get_youtube_transcript",
