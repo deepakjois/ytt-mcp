@@ -1,6 +1,6 @@
 # ytt-mcp: YouTube Transcript MCP Server
 
-MCP Server to fetch transcripts for YouTube transcripts.
+MCP Server to fetch transcripts for YouTube videos.
 
 ## Installing and Running
 The most convenient way to install and run is to use [uv](https://docs.astral.sh/uv/) and then invoke the package using `uvx`
