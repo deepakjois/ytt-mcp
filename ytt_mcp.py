@@ -93,5 +93,9 @@ async def get_youtube_transcript(url: str) -> str:
         raise ValueError(f"Error retrieving transcript: {e}")
 
 
-if __name__ == "__main__":
+def main():
     mcp.run()
+
+
+if __name__ == "__main__":
+    main()

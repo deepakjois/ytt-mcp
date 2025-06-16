@@ -44,7 +44,7 @@ style = "pep440"
 bump = true
 
 [project.scripts]
-ytt-mcp = "ytt_mcp.py"
+ytt-mcp = "ytt_mcp:main"
 
 [project.urls]
 Repository = "https://github.com/deepakjois/ytt-mcp"
