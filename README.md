@@ -1,5 +1,7 @@
 # ytt-mcp: YouTube Transcript MCP Server
 
+MCP Server to fetch transcripts for YouTube transcripts.
+
 ## Installing and Running
 The most convenient way to install and run is to use [uv](https://docs.astral.sh/uv/) and then invoke the package using `uvx`
 
@@ -18,7 +20,7 @@ Go to _Settings_ → _Developer_, and then click on _Edit Config_. This will ope
 }
 ```
 
-Relaunch Claude config and try out the server as show in the screenshot below
+Relaunch Claude config and try out the server as shown in the screenshot below
 
 <img width="1621" alt="image" src="https://github.com/user-attachments/assets/179e8ee0-524e-4735-a3bc-ff4f8fdb9d08" />
 
@@ -31,9 +33,9 @@ If you are using Raycast, you can install the MCP server by invoking the _Instal
 After that you can refer to the MCP server as `@youtube-transcript` and interact with it. You can also use it in a Raycast AI Command with a prompt. For example, here is a prompt I use to extract and summarize a YouTube URL in the clipboard
 
 ```
-@youtube-transcript the Youtube transcript of the video: {clipboard | raw}
+@youtube-transcript fetch the Youtube transcript of the video: {clipboard | raw}
 
-Comprehenively summarize the transcript with the following format:
+Comprehensively summarize the transcript with the following format:
 """
 ### Key Takeaways
 
