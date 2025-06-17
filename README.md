@@ -5,6 +5,17 @@ MCP Server to fetch transcripts for YouTube videos.
 ## Installing and Running
 The most convenient way to install and run is to use [uv](https://docs.astral.sh/uv/) and then invoke the package using `uvx`
 
+## Using MCP Inspector (for development/debugging/testing only)
+```
+uv run fastmcp dev ytt_mcp.py
+```
+
+This will generate a localhost URL that can be used to examine and test out the server.
+
+<img width="1800" alt="image" src="https://github.com/user-attachments/assets/4eba6d52-0542-4734-bd76-9be1752bd82d" />
+
+
+
 ## Claude Desktop
 Go to _Settings_ → _Developer_, and then click on _Edit Config_. This will open the claude-desktop-config.json file in your default editor. Make the following addition
 
