@@ -90,7 +90,9 @@ async def test_youtube_transcript_mcp_server():
         assert len(tools) == 1
         assert tools[0].name == "get_youtube_transcript"
 
-        with patch("ytt_mcp.fetch_youtube_transcript", new_callable=AsyncMock) as mock_fetch:
+        with patch(
+            "ytt_mcp.fetch_youtube_transcript", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.side_effect = mock_fetch_side_effect
 
             # Test default case (no lang parameter)

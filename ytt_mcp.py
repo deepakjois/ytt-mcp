@@ -33,6 +33,7 @@ VALID_HOSTNAMES = {
     "youtu.be",
 }
 
+
 def extract_video_id(url_or_id: str) -> str:
     """Extract YouTube video ID from URL or return ID if already provided.
 
@@ -51,7 +52,7 @@ def extract_video_id(url_or_id: str) -> str:
 
     try:
         parsed = urlparse(url_or_id)
-        
+
         # Validate hostname
         if parsed.netloc not in VALID_HOSTNAMES:
             raise ValueError(f"Invalid YouTube hostname: {parsed.netloc}")
