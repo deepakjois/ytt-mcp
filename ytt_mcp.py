@@ -6,6 +6,7 @@ A Model Context Protocol server that provides YouTube transcript extraction.
 import logging
 import re
 from typing import Annotated
+from urllib.parse import urlparse, parse_qs
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -24,6 +25,13 @@ mcp = FastMCP(
     instructions="This server provides the transcript of a YouTube video.",
 )
 
+# Valid YouTube hostnames
+VALID_HOSTNAMES = {
+    "www.youtube.com",
+    "youtube.com",
+    "m.youtube.com",
+    "youtu.be",
+}
 
 def extract_video_id(url_or_id: str) -> str:
     """Extract YouTube video ID from URL or return ID if already provided.
@@ -35,18 +43,42 @@ def extract_video_id(url_or_id: str) -> str:
         YouTube video ID
 
     Raises:
-        ValueError: If video ID cannot be extracted
+        ValueError: If video ID cannot be extracted or URL is invalid
     """
-    # Extract video ID from URL if it's a full URL
-    video_id_match = re.search(r"(?:v=|/)([a-zA-Z0-9_-]{11})", url_or_id)
-    if video_id_match:
-        return video_id_match.group(1)
-
     # Check if it's already a valid video ID format
     if re.match(r"^[a-zA-Z0-9_-]{11}$", url_or_id):
         return url_or_id
 
-    raise ValueError(f"Invalid YouTube URL or video ID: {url_or_id}")
+    try:
+        parsed = urlparse(url_or_id)
+        
+        # Validate hostname
+        if parsed.netloc not in VALID_HOSTNAMES:
+            raise ValueError(f"Invalid YouTube hostname: {parsed.netloc}")
+
+        # Handle different URL patterns
+        if parsed.netloc == "youtu.be":
+            # Short URL format: youtu.be/VIDEO_ID
+            video_id = parsed.path.lstrip("/")
+        elif parsed.path.startswith("/shorts/"):
+            # Shorts format: youtube.com/shorts/VIDEO_ID
+            video_id = parsed.path.split("/")[2]
+        elif parsed.path.startswith("/embed/"):
+            # Embed format: youtube.com/embed/VIDEO_ID
+            video_id = parsed.path.split("/")[2]
+        else:
+            # Standard watch URL format
+            query_params = parse_qs(parsed.query)
+            video_id = query_params.get("v", [None])[0]
+
+        # Validate video ID format
+        if not video_id or not re.match(r"^[a-zA-Z0-9_-]{11}$", video_id):
+            raise ValueError(f"Invalid video ID format in URL: {url_or_id}")
+
+        return video_id
+
+    except Exception as e:
+        raise ValueError(f"Invalid YouTube URL or video ID: {url_or_id}") from e
 
 
 async def fetch_youtube_transcript(video_id: str, lang: str = "en") -> str:

@@ -25,6 +25,26 @@ class TestExtractVideoId:
         url = "https://www.youtube.com/embed/dQw4w9WgXcQ"
         assert extract_video_id(url) == "dQw4w9WgXcQ"
 
+    def test_extract_from_shorts_url(self) -> None:
+        """Test extracting ID from shorts URL."""
+        url = "https://www.youtube.com/shorts/dQw4w9WgXcQ"
+        assert extract_video_id(url) == "dQw4w9WgXcQ"
+
+    def test_extract_from_mobile_url(self) -> None:
+        """Test extracting ID from mobile URL."""
+        url = "https://m.youtube.com/watch?v=dQw4w9WgXcQ"
+        assert extract_video_id(url) == "dQw4w9WgXcQ"
+
+    def test_extract_from_url_with_timestamp(self) -> None:
+        """Test extracting ID from URL with timestamp."""
+        url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=123s"
+        assert extract_video_id(url) == "dQw4w9WgXcQ"
+
+    def test_extract_from_url_with_additional_params(self) -> None:
+        """Test extracting ID from URL with additional parameters."""
+        url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&feature=share&si=abc123"
+        assert extract_video_id(url) == "dQw4w9WgXcQ"
+
     def test_return_video_id_directly(self) -> None:
         """Test returning video ID when already provided."""
         video_id = "dQw4w9WgXcQ"
@@ -34,6 +54,21 @@ class TestExtractVideoId:
         """Test that invalid URL raises ValueError."""
         with pytest.raises(ValueError, match="Invalid YouTube URL"):
             extract_video_id("not-a-valid-url")
+
+    def test_invalid_hostname_raises_error(self) -> None:
+        """Test that invalid hostname raises ValueError."""
+        with pytest.raises(ValueError, match="Invalid YouTube URL or video ID"):
+            extract_video_id("https://invalid-domain.com/watch?v=dQw4w9WgXcQ")
+
+    def test_missing_video_id_raises_error(self) -> None:
+        """Test that URL without video ID raises ValueError."""
+        with pytest.raises(ValueError, match="Invalid YouTube URL or video ID"):
+            extract_video_id("https://www.youtube.com/watch")
+
+    def test_invalid_video_id_format_raises_error(self) -> None:
+        """Test that URL with invalid video ID format raises ValueError."""
+        with pytest.raises(ValueError, match="Invalid YouTube URL or video ID"):
+            extract_video_id("https://www.youtube.com/watch?v=invalid-id")
 
 
 async def test_youtube_transcript_mcp_server():
