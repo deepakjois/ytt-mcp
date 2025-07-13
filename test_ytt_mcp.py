@@ -100,8 +100,8 @@ async def test_youtube_transcript_mcp_server():
                 "get_youtube_transcript",
                 {"url": "https://youtube.com/watch?v=dQw4w9WgXcQ"},
             )
-            assert isinstance(result[0], TextContent)
-            assert result[0].text == mock_transcript_en
+            assert isinstance(result.content[0], TextContent)
+            assert result.content[0].text == mock_transcript_en
             mock_fetch.assert_called_with("dQw4w9WgXcQ", "en")
 
             # Test explicit English language
@@ -109,8 +109,8 @@ async def test_youtube_transcript_mcp_server():
                 "get_youtube_transcript",
                 {"url": "https://youtube.com/watch?v=dQw4w9WgXcQ", "lang": "en"},
             )
-            assert isinstance(result[0], TextContent)
-            assert result[0].text == mock_transcript_en
+            assert isinstance(result.content[0], TextContent)
+            assert result.content[0].text == mock_transcript_en
             mock_fetch.assert_called_with("dQw4w9WgXcQ", "en")
 
             # Test French transcript
@@ -118,8 +118,8 @@ async def test_youtube_transcript_mcp_server():
                 "get_youtube_transcript",
                 {"url": "https://youtube.com/watch?v=dQw4w9WgXcQ", "lang": "fr"},
             )
-            assert isinstance(result[0], TextContent)
-            assert result[0].text == mock_transcript_fr
+            assert isinstance(result.content[0], TextContent)
+            assert result.content[0].text == mock_transcript_fr
             mock_fetch.assert_called_with("dQw4w9WgXcQ", "fr")
 
         # Test invalid language code (Pydantic validation)
