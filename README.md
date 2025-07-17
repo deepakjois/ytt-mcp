@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/cottongeeks-ytt-mcp-badge.png)](https://mseep.ai/app/cottongeeks-ytt-mcp)
+
 # ytt-mcp: YouTube Transcript MCP Server
 
 MCP Server to fetch transcripts for YouTube videos.
